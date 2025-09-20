@@ -7,6 +7,13 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                 git branch: 'main',
+                 url: 'git@github.com:baliramakrishna667/tuation_app.git',
+                 credentialsId: 'git_token'
+                }
+        }
        stage('Build Backend') {
             steps {
                 dir('backend') {
