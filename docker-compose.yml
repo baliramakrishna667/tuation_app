@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.3
+    container_name: tuition-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: tuitiondb
+      MYSQL_USER: tuition_user
+      MYSQL_PASSWORD: tuition_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  backend:
+    build: ./backend
+    container_name: tuition-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tuitiondb
+      SPRING_DATASOURCE_USERNAME: tuition_user
+      SPRING_DATASOURCE_PASSWORD: tuition_pass
+    depends_on:
+      - mysql
+
+  frontend:
+    build: ./frontend
+    container_name: tuition-frontend
+    ports:
+      - "3000:80"   # Host port 3000 -> Nginx serving frontend on port 80
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

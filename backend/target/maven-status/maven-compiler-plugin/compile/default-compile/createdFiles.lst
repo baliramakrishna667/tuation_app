@@ -1,0 +1,5 @@
+com\example\tuition\repository\StudentRepository.class
+com\example\tuition\model\CourseType.class
+com\example\tuition\model\Student.class
+com\example\tuition\controller\StudentController.class
+com\example\tuition\TuitionApplication.class
