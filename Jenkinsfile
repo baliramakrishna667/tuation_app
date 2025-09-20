@@ -7,13 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout git') {
-            steps {
-                git branch: 'main', url: 'git@github.com:baliramakrishna667/tuation_app.git'
-            }
-        }
-
-        stage('Build Backend') {
+       stage('Build Backend') {
             steps {
                 dir('backend') {
                     sh './mvnw clean package'
