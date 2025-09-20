@@ -7,12 +7,11 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
+        stages {
+        stage('Git Checkout') {
             steps {
-                 git branch: 'main',
-                 url: 'git@github.com:baliramakrishna667/tuation_app.git',
-                 credentialsId: 'git_token'
-                }
+                git branch: 'main', url: 'git@github.com:baliramakrishna667/tuation_app.git'
+            }
         }
        stage('Build Backend') {
             steps {
