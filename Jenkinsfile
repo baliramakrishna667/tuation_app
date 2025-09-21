@@ -112,7 +112,7 @@ pipeline {
                         sonar-scanner \
                             -Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} \
                             -Dsonar.sources=. \
-                            -Dsonar.login=${SONAR_LOGIN}
+                            -Dsonar.login=${SONAR_LOGIN_BACKEND}
                         """
                     }
                 }
