@@ -16,7 +16,7 @@ pipeline {
 
         // Frontend project
         SONAR_PROJECT_KEY_FRONTEND = 'tuation_app_frontend'
-        SONAR_LOGIN_FRONTEND = credentials('sonar-token_frontend')
+       
     }
 
     stages {
@@ -112,7 +112,7 @@ pipeline {
                         sonar-scanner \
                             -Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} \
                             -Dsonar.sources=. \
-                            -Dsonar.login=${SONAR_LOGIN_FRONTEND}
+                            -Dsonar.login=${SONAR_LOGIN}
                         """
                     }
                 }
