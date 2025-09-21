@@ -10,6 +10,11 @@ pipeline {
         SONAR_PROJECT_KEY = 'tuation_app' // Unique project key in SonarQube
         SONAR_HOST_URL = 'http://172.31.20.48:9000' // SonarQube server URL
         SONAR_LOGIN = credentials('sonar-token') // Jenkins credential for SonarQube token
+
+       
+        SONAR_PROJECT_KEY_frnt = 'tuation_app_frontend' // Unique project key in SonarQube
+       
+        SONAR_LOGIN_frnt = credentials('sonar-token_frontend') // Jenkins credential for SonarQube token
     }
 
     stages {
@@ -72,6 +77,36 @@ pipeline {
                 dir('frontend') {
                     sh 'npm install'
                     sh 'npm run build'
+                }
+            }
+        }
+        satge ('frontend unit test') {
+             steps {
+                    dir('frontend') {
+                        sh 'npm test -- --watchAll=false'
+                    }
+                }
+            
+        }
+        stage ('frontend Integration test') {
+            steps {
+                dir('frontend') {
+                    sh 'npm run e2e'
+                }
+            }
+        }
+        stage('Code Analysis with SonarQube') {
+            steps {
+                dir('frontend') {
+                    withSonarQubeEnv('SonarQube') {
+                    sh """
+                    sonar-scanner \
+                        -Dsonar.projectKey=${SONAR_PROJECT_KEY_FRNT} \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=${SONAR_HOST_URL} \
+                        -Dsonar.login=${SONAR_LOGIN_FRNT}
+                        """
+                    }
                 }
             }
         }
