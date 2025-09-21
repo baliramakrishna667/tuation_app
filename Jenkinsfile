@@ -4,7 +4,7 @@ pipeline {
     tools {
         maven 'Maven 3.8'       // Configured in Jenkins
         nodejs 'NodeJS 18'      // Configured in Jenkins
-        sonarScanner 'SonarScanner' // Configured in Jenkins (for frontend)
+        
     }
 
     environment {
