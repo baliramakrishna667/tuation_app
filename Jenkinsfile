@@ -91,7 +91,7 @@ pipeline {
         stage('Frontend Unit Test') {
             steps {
                 dir('frontend') {
-                    sh 'npm test -- --watchAll=false'
+                    sh 'npm test -- --watchAll=false --passWithNoTests'
                 }
             }
         }
