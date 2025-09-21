@@ -9,7 +9,9 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "e2e": "cypress run"
   },
   "browserslist": {
     "production": [
