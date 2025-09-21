@@ -28,17 +28,25 @@ pipeline {
         }
         stage('UNIT TEST'){
             steps {
-                sh 'mvn test'
+                dir('backend') {
+                   sh 'mvn test'
+                }
             }
         }
         stage('INTEGRATION TEST'){
             steps {
-                sh 'mvn verify -DskipUnitTests'
+                dir('backend') {
+                   sh 'mvn verify -DskipUnitTests'
+                }
+                
             }
         }
         stage ("code analysis with checklist") {
             steps {
-                sh 'mvn checkstyle:checkstyle'
+                dir('backend') {
+                   sh 'mvn checkstyle:checkstyle'
+                }
+                
             }
             post {
                 success {
