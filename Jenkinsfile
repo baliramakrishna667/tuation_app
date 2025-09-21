@@ -2,76 +2,83 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.8'   // Name of Maven tool configured in Jenkins
-        nodejs 'NodeJS 18'  // Optional, if frontend uses Node.js
+        maven 'Maven 3.8'       // Configured in Jenkins
+        nodejs 'NodeJS 18'      // Configured in Jenkins
+        sonarScanner 'SonarScanner' // Configured in Jenkins (for frontend)
     }
-     environment {
-        SONARQUBE_SERVER = 'SonarQube' // Name of your SonarQube server configured in Jenkins
-        SONAR_PROJECT_KEY = 'tuation_app' // Unique project key in SonarQube
-        SONAR_HOST_URL = 'http://172.31.20.48:9000' // SonarQube server URL
-        SONAR_LOGIN = credentials('sonar-token') // Jenkins credential for SonarQube token
 
-       
-        SONAR_PROJECT_KEY_frnt = 'tuation_app_frontend' // Unique project key in SonarQube
-       
-        SONAR_LOGIN_frnt = credentials('sonar-token_frontend') // Jenkins credential for SonarQube token
+    environment {
+        SONARQUBE_SERVER = 'SonarQube' // Must match Jenkins global config
+
+        // Backend project
+        SONAR_PROJECT_KEY_BACKEND = 'tuation_app'
+        SONAR_LOGIN_BACKEND = credentials('sonar-token')
+
+        // Frontend project
+        SONAR_PROJECT_KEY_FRONTEND = 'tuation_app_frontend'
+        SONAR_LOGIN_FRONTEND = credentials('sonar-token_frontend')
     }
 
     stages {
-        
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'git@github.com:baliramakrishna667/tuation_app.git'
             }
         }
-       stage('Build Backend') {
+
+        /* ==== BACKEND ==== */
+        stage('Build Backend') {
             steps {
                 dir('backend') {
                     sh 'mvn clean package -DskipTests'
                 }
             }
         }
-        stage('UNIT TEST'){
+
+        stage('Backend Unit Test') {
             steps {
                 dir('backend') {
-                   sh 'mvn test'
+                    sh 'mvn test'
                 }
             }
         }
-        stage('INTEGRATION TEST'){
+
+        stage('Backend Integration Test') {
             steps {
                 dir('backend') {
-                   sh 'mvn verify -DskipUnitTests'
+                    sh 'mvn verify -DskipUnitTests'
                 }
-                
             }
         }
-        stage ("code analysis with checklist") {
+
+        stage('Backend Checkstyle') {
             steps {
                 dir('backend') {
-                   sh 'mvn checkstyle:checkstyle'
+                    sh 'mvn checkstyle:checkstyle'
                 }
-                
             }
             post {
                 success {
-                    echo "Generated analysis result"
+                    echo "Generated backend checkstyle report"
                 }
             }
         }
-        stage('Code Analysis with SonarQube') {
+
+        stage('Backend Code Analysis with SonarQube') {
             steps {
                 dir('backend') {
-                    withSonarQubeEnv('SonarQube') { // Must match SONARQUBE_SERVER name
-                        sh "mvn sonar:sonar \
-                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                            -Dsonar.host.url=${SONAR_HOST_URL} \
-                            -Dsonar.login=${SONAR_LOGIN}"
+                    withSonarQubeEnv('SonarQube') {
+                        sh """
+                        mvn sonar:sonar \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY_BACKEND} \
+                            -Dsonar.login=${SONAR_LOGIN_BACKEND}
+                        """
                     }
                 }
             }
         }
 
+        /* ==== FRONTEND ==== */
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
@@ -80,37 +87,36 @@ pipeline {
                 }
             }
         }
-        satge ('frontend unit test') {
-             steps {
-                    dir('frontend') {
-                        sh 'npm test -- --watchAll=false'
-                    }
+
+        stage('Frontend Unit Test') {
+            steps {
+                dir('frontend') {
+                    sh 'npm test -- --watchAll=false'
                 }
-            
+            }
         }
-        stage ('frontend Integration test') {
+
+        stage('Frontend Integration Test') {
             steps {
                 dir('frontend') {
                     sh 'npm run e2e'
                 }
             }
         }
-        stage('Code Analysis with SonarQube') {
+
+        stage('Frontend Code Analysis with SonarQube') {
             steps {
                 dir('frontend') {
                     withSonarQubeEnv('SonarQube') {
-                    sh """
-                    sonar-scanner \
-                        -Dsonar.projectKey=${SONAR_PROJECT_KEY_FRNT} \
-                        -Dsonar.sources=. \
-                        -Dsonar.host.url=${SONAR_HOST_URL} \
-                        -Dsonar.login=${SONAR_LOGIN_FRNT}
+                        sh """
+                        sonar-scanner \
+                            -Dsonar.projectKey=${SONAR_PROJECT_KEY_FRONTEND} \
+                            -Dsonar.sources=. \
+                            -Dsonar.login=${SONAR_LOGIN_FRONTEND}
                         """
                     }
                 }
             }
         }
-        
-
     }
 }
