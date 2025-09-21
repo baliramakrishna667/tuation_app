@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stages {
+        
         stage('Git Checkout') {
             steps {
                 git branch: 'main', url: 'git@github.com:baliramakrishna667/tuation_app.git'
